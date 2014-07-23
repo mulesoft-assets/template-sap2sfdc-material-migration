@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+	xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+	<data-mapper:config name="BAPI_MATERIAL_GETLIST_to_List_Material_"
+		transformationGraphPath="bapi_material_getlist_to_list_material_.grf"
+		doc:name="BAPI_MATERIAL_GETLIST_to_List_Material_" />
+	<data-mapper:config name="BAPI_MATERIAL_GET_DETAIL_to_Salesforce_Material"
+		transformationGraphPath="bapi_material_get_detail_to_salesforce_material.grf"
+		doc:name="BAPI_MATERIAL_GET_DETAIL_to_Salesforce_Material" />
+    <data-mapper:config name="BAPI_MATERIAL_GETINTNUMBER_to_MaterialNumber_Wrapper" transformationGraphPath="bapi_material_getintnumber_to_materialnumber_wrapper.grf" doc:name="BAPI_MATERIAL_GETINTNUMBER_to_MaterialNumber_Wrapper"/>
+
+	<batch:job name="fromSapToSalesforceBatch">
+		<batch:threading-profile poolExhaustedAction="WAIT" />
+		<batch:process-records>
+			<batch:step name="foreachMaterialInSapGetProductInSalesforceStep">
+				<enricher target="#[recordVars['productInSalesforce']]"
+					doc:name="Store result in record var 'productInSalesforce'">
+					<sfdc:query-single config-ref="Salesforce"
+						query="SELECT Id, LastModifiedDate, Name, ProductCode FROM Product2 WHERE ProductCode = '#[payload['ProductCode']]'"
+						doc:name="Query Product from Salesforce" />
+				</enricher>
+			</batch:step>
+			<batch:step name="foreachMaterialInSapUpsertProductInSalesforceStep" accept-expression="recordVars['productInSalesforce'] is NullPayload || org.mule.templates.util.DateUtils.isAfter(payload['LastModifiedDate'], recordVars['productInSalesforce']['LastModifiedDate'], ${timeOffsetBetweenSapAndSalesforce}) &amp;&amp; ('${sap.jco.user}' != (payload['LastModifiedById'] == null ? payload['CreatedById'] : payload['LastModifiedById']))">
+                <expression-component doc:name="Prepare Product for Upsert"><![CDATA[if (!(recordVars['productInSalesforce'] is NullPayload)) {
+	payload['Id'] = recordVars['productInSalesforce']['Id'];
+}
+
+payload.keySet().retainAll(['Id', 'ProductCode', 'Name']);]]></expression-component>
+				<batch:commit doc:name="Batch Commit" size="200">
+					<sfdc:upsert config-ref="Salesforce"
+						externalIdFieldName="Id" type="Product2" doc:name="Salesforce">
+						<sfdc:objects ref="#[payload]" />
+					</sfdc:upsert>
+					<logger message="Upsert Salesforce Response: #[payload]"
+						level="INFO" doc:name="Log Response" />
+				</batch:commit>
+			</batch:step>
+		</batch:process-records>
+        <batch:on-complete>
+            <scatter-gather doc:name="All">
+                <processor-chain>
+                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+                    <logger message="Migration process has finished: #[payload]" level="INFO" doc:name="log migration process has finished"/>
+                </processor-chain>
+                <processor-chain>
+                    <json:object-to-json-transformer doc:name="transform BatchJobInstance to JSON"/>
+                    <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="Gmail" doc:name="send result of the batch in mail"/>
+                </processor-chain>
+            </scatter-gather>
+        </batch:on-complete>
+	</batch:job>
+</mule>
