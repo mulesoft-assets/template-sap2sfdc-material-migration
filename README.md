@@ -1,5 +1,5 @@
 
-# Anypoint Template: SFDC2SAP-product-bidirectional-sync
+# Anypoint Template: SAP2SFDC-product-migration-sync
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -26,8 +26,8 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-This Anypoint Template should serve as a foundation for setting an online bi-directional synchronization of products/materials between Salesforce and SAP.
-			Everytime there is a new product/material or a change in already existing one in Salesforce or SAP instance, the template will fetch it and send it as IDoc to SAP or Salesforce respectively to update product/material there.
+This Anypoint Template should serve as a foundation for setting an offline migration of products/materials between Salesforce and SAP.
+			Everytime there is a new product/material or a change in already existing one in SAP, the template will fetch it and send it as to Salesforce respectively to update product/material there.
 			
 			Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 			
@@ -74,16 +74,7 @@ RFC SDK is used to register program ID on gateway. Same program ID name is used 
 Partner port needs to be defined type of Idoc of SAP release 4.x as its version. As RFC destination same RFC destination created earlier is used.
 
 
-### As destination of data
 
-Template uses custom BAPI function. To create them please use following steps:
-
-1. Create structure ZMULE_S_MARA in transaction SE11 as per its definition in file structure_ZMULE_S_MARA.abap
-2. Create table type ZMULE_TT_MARA in transaction SE11 as per its definition in file table_type_ZMULE_TT_MARA.abap
-3. Create message class called ZMULESOFTINTEGRATION in transaction SE91 as per definition in file msg_class_ZMULESOFTINTEGRATION.abap
-4. Create function module ZMULE_MATERIAL_GETLIST in transaction SE37 as per source file ZMULE_MATERIAL_GETLIST.abap
-
-Referenced files are in [src/main/resources] directory.
 ## Salesforce Considerations <a name="salesforceconsiderations"/>
 
 There may be a few things that you need to know regarding Salesforce, in order for this template to work.
@@ -104,23 +95,6 @@ In order to have this template working as expected, you should be aware of your 
 [1]: https://help.salesforce.com/HTViewHelpDoc?id=checking_field_accessibility_for_a_particular_field.htm&language=en_US
 [2]: https://help.salesforce.com/HTViewHelpDoc?id=modifying_field_access_settings.htm&language=en_US
 
-### As source of data
-
-If the user configured in the template for the source system does not have at least *read only* permissions for the fields that are fetched, then a *InvalidFieldFault* API fault will show up.
-
-```
-java.lang.RuntimeException: [InvalidFieldFault [ApiQueryFault [ApiFault  exceptionCode='INVALID_FIELD'
-exceptionMessage='
-Account.Phone, Account.Rating, Account.RecordTypeId, Account.ShippingCity
-^
-ERROR at Row:1:Column:486
-No such column 'RecordTypeId' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.'
-]
-row='1'
-column='486'
-]
-]
-```
 
 ### As destination of data
 
@@ -129,7 +103,7 @@ There are no particular considerations for this Anypoint Template regarding Sieb
 
 
 # Run it! <a name="runit"/>
-Simple steps to get SFDC2SAP-product-bidirectional-sync running.
+Simple steps to get SAP2SFDC-product-migration-sync running.
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -184,8 +158,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 ### Application configuration
 **Common configuration**
 
-+ polling.frequency `10000`
-+ polling.start.delay `5000`
++ http.port `9090`
 + watermark.default.expression `2014-06-26T12:30:00.000Z`
 + page.size `100`
 

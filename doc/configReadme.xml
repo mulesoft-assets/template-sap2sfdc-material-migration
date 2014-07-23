@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <configuration>
 	<placeholders>
-		<placeholder id="template_name">SFDC2SAP-product-bidirectional-sync</placeholder>
+		<placeholder id="template_name">SAP2SFDC-product-migration-sync</placeholder>
 	</placeholders>
 	<sections>
 		<section id="use_case">
-			This Anypoint Template should serve as a foundation for setting an online bi-directional synchronization of products/materials between Salesforce and SAP.
-			Everytime there is a new product/material or a change in already existing one in Salesforce or SAP instance, the template will fetch it and send it as IDoc to SAP or Salesforce respectively to update product/material there.
+			This Anypoint Template should serve as a foundation for setting an offline migration of products/materials between Salesforce and SAP.
+			Everytime there is a new product/material or a change in already existing one in SAP, the template will fetch it and send it as to Salesforce respectively to update product/material there.
 			
 			Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 			
@@ -72,8 +72,7 @@ For instance if 10 records are fetched from origin instance, then 12 API calls w
 <![CDATA[
 **Common configuration**
 
-+ polling.frequency `10000`
-+ polling.start.delay `5000`
++ http.port `9090`
 + watermark.default.expression `2014-06-26T12:30:00.000Z`
 + page.size `100`
 
