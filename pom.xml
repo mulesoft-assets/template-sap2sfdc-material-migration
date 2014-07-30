@@ -15,8 +15,6 @@
 	<name>template-sap2sfdc-product-migration Anypoint Template Project</name>
 
 	<properties>
-		<sfdc.version>5.4.7</sfdc.version>
-		<sap.transport.version>2.2.2</sap.transport.version>
 		<sap.jco.version>3.0.9</sap.jco.version>
 		<sap.idoc.version>3.0.6</sap.idoc.version>
 		<sap.build.type>mac64</sap.build.type>
@@ -124,31 +122,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.mulesoft.muleesb.modules</groupId>
-			<artifactId>mule-module-batch-ee</artifactId>
-			<version>${mule.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	<dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-spring-config</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    <dependency>
-            <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-http</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    <dependency>
-            <groupId>org.mule.transports</groupId>
-            <artifactId>mule-transport-email</artifactId>
-            <version>${mule.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+	    </dependencies>
 
 
 	<repositories>
