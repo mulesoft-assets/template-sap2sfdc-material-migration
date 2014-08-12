@@ -121,7 +121,7 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 		product.put("ProductCode", "S2S_PBS-" + uniqueSuffix);
 
 		final Map<String, Object> sapProduct = (Map<String, Object>) product.clone();
-		sapProduct.put("Name", "sap2sfdc-prod-migration-"+ uniqueSuffix + "-SAP");
+		sapProduct.put("Name", "BATTERY-sap2sfdc-prod-migration-"+ uniqueSuffix + "-SAP");
 
 		// Create products in sand-boxes and keep track of them for posterior cleaning up
 		// note that product in target instance doesn't need to exist - other tests could test that too

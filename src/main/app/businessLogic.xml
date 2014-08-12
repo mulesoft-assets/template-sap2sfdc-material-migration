@@ -5,7 +5,7 @@
 	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.0"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -32,22 +32,20 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
 					doc:name="Store result in record var 'productInSalesforce'">
 					<sfdc:query-single config-ref="Salesforce"
 						query="SELECT Id, LastModifiedDate, Name, ProductCode FROM Product2 WHERE ProductCode = '#[payload['ProductCode']]'"
-						doc:name="Query Product from Salesforce" />
+						doc:name="query Product from Salesforce" />
 				</enricher>
 			</batch:step>
-			<batch:step name="foreachMaterialInSapUpsertProductInSalesforceStep" accept-expression="recordVars['productInSalesforce'] is NullPayload || org.mule.templates.util.DateUtils.isAfter(payload['LastModifiedDate'], recordVars['productInSalesforce']['LastModifiedDate'], ${timeOffsetBetweenSapAndSalesforce}) &amp;&amp; ('${sap.jco.user}' != (payload['LastModifiedById'] == null ? payload['CreatedById'] : payload['LastModifiedById']))">
-                <expression-component doc:name="Prepare Product for Upsert"><![CDATA[if (!(recordVars['productInSalesforce'] is NullPayload)) {
-	payload['Id'] = recordVars['productInSalesforce']['Id'];
-}
-
-payload.keySet().retainAll(['Id', 'ProductCode', 'Name']);]]></expression-component>
+			<batch:step name="foreachMaterialInSapUpsertProductInSalesforceStep" >
+                <expression-component doc:name="prepare Product for Upsert"><![CDATA[payload['Id'] = recordVars['productInSalesforce'] is NullPayload ? null : recordVars['productInSalesforce']['Id'];
+payload.keySet().retainAll(['Id', 'ProductCode', 'Name']);
+]]></expression-component>
 				<batch:commit doc:name="Batch Commit" size="200">
 					<sfdc:upsert config-ref="Salesforce"
-						externalIdFieldName="Id" type="Product2" doc:name="Salesforce">
+						externalIdFieldName="Id" type="Product2" doc:name="upsert Product in Salesforce">
 						<sfdc:objects ref="#[payload]" />
 					</sfdc:upsert>
 					<logger message="Upsert Salesforce Response: #[payload]"
-						level="INFO" doc:name="Log Response" />
+						level="INFO" doc:name="log Response" />
 				</batch:commit>
 			</batch:step>
 		</batch:process-records>

@@ -13,21 +13,26 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
-    <data-mapper:config name="ZMULE_MATERIAL_GETLIST_to_Salesforce_Materials" transformationGraphPath="zmule_material_getlist_to_salesforce_materials.grf" doc:name="ZMULE_MATERIAL_GETLIST_to_Salesforce_Materials"/>
+    <data-mapper:config name="BAPI_MATERIAL_GETLIST_to_Products" transformationGraphPath="bapi_material_getlist_to_products.grf" doc:name="BAPI_MATERIAL_GETLIST_to_Products"/>
 
 	<!-- 	In this file you should declare all your inbound endpoints and from here controll the access to your application -->
 
     <flow name="fromSapToSalesforceFlow" doc:name="fromSapToSalesforceFlow"  processingStrategy="synchronous">
         <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="${http.port}" path="migrate-materials" doc:name="HTTP"/>
-        <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP">
+        <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP">
             <sap:definition><![CDATA[<jco>
-  	<import>
-  		<field name="I_FROM_DATE">${watermark.default.expression}</field>
-	</import>
-</jco>
-]]></sap:definition>
+  	<tables>
+		<table name="MATERIALSHORTDESCSEL">
+			<row>
+				<field name="SIGN">I</field>
+				<field name="OPTION">CP</field>
+				<field name="DESCR_LOW">*BATTERY*</field>
+			</row>
+		</table>
+	</tables>
+</jco>]]></sap:definition>
         </sap:outbound-endpoint>
-        <data-mapper:transform config-ref="ZMULE_MATERIAL_GETLIST_to_Salesforce_Materials" doc:name="ZMULE_MATERIAL_GETLIST to Salesforce Materials"/>
+        <data-mapper:transform config-ref="BAPI_MATERIAL_GETLIST_to_Products" doc:name="BAPI_MATERIAL_GETLIST to Products"/>
         <batch:execute name="fromSapToSalesforceBatch" doc:name="trigger 'fromSapToSalesforceBatch'"/>
         <set-payload value="&lt;body style='font-family:Courier'&gt;&lt;h1&gt;Batch Process initiated&lt;/h1&gt;&lt;b&gt;ID:&lt;/b&gt;#[payload.getId()]&lt;br/&gt;&lt;b&gt;Records to Be Processed: &lt;/b&gt;#[payload.getRecordCount()]&lt;br/&gt; &lt;b&gt;Start execution on: &lt;/b&gt;#[new java.util.Date()]&lt;/body&gt;" doc:name="build Http response"/>
         <http:response-builder status="200" contentType="text/html" doc:name="HTTP Response Builder"/>

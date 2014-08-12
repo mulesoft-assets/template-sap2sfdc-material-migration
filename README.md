@@ -1,5 +1,5 @@
 
-# Anypoint Template: SAP2SFDC-product-migration-sync
+# Anypoint Template: SAP2SFDC-product-migration
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -27,17 +27,12 @@ Please review the terms of the license before downloading and using this templat
 
 # Use Case <a name="usecase"/>
 This Anypoint Template should serve as a foundation for setting an offline migration of products/materials between Salesforce and SAP.
-			Everytime there is a new product/material or a change in already existing one in SAP, the template will fetch it and send it as to Salesforce respectively to update product/material there.
-			
 			Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
+			
+			Template migrates all materials from SAP containing word _BATTERY_ to Salesforce Products.
 			
 			As implemented, this Anypoint Template leverage the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing).
 			The batch job is divided in Input, Process and On Complete stages.
-			The integration is triggered by poll to one of Salesforce Protucts or SAP Materials. New or modified products/materials are passed to the batch as input.
-			In the batch the customer is fetched from SAP by Material Number or from Salesforce by its Product Code.
-			Afterwards every such product/material is sent to destination instance - to Salesforce with Upsert or to SAP in form of iDoc XML where it is asynchronously updated or created.
-			
-			Both polls are executed mutually exclusively using shared lock.
 
 # Considerations <a name="considerations"/>
 
@@ -103,7 +98,7 @@ There are no particular considerations for this Anypoint Template regarding Sieb
 
 
 # Run it! <a name="runit"/>
-Simple steps to get SAP2SFDC-product-migration-sync running.
+Simple steps to get SAP2SFDC-product-migration running.
 
 
 ## Running on premise <a name="runonopremise"/>
@@ -159,7 +154,6 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 **Common configuration**
 
 + http.port `9090`
-+ watermark.default.expression `2014-06-26T12:30:00.000Z`
 + page.size `100`
 
 **SalesForce Connector configuration**
@@ -168,7 +162,6 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.password `DylanPassword123`
 + sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
 + sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
-+ sfdc.integration.user.id `005n0000000T3QpAAK`
 
 **SAP Connector configuration**
 
@@ -178,12 +171,6 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.jco.sysnr `14`
 + sap.jco.client `800`
 + sap.jco.lang `EN`
-
-**SAP Material properties configuration**
-
-+ sap.material.type `ZHTI`
-+ sap.material.industrySector `T`
-+ sap.material.baseUnitOfMeasurement `KGS`
 
 # API Calls <a name="apicalls"/>
 Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. The Anypoint Template calls to the API can be calculated using the formula:
