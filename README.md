@@ -1,5 +1,5 @@
 
-# Anypoint Template: SAP2SFDC-product-migration-sync
+# Anypoint Template: SAP2SFDC-material-migration-sync
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -103,7 +103,7 @@ There are no particular considerations for this Anypoint Template regarding Sieb
 
 
 # Run it! <a name="runit"/>
-Simple steps to get SAP2SFDC-product-migration-sync running.
+Simple steps to get SAP2SFDC-material-migration-sync running.
 
 
 ## Running on premise <a name="runonopremise"/>
