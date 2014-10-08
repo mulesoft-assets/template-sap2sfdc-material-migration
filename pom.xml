@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 	</parent>
 
-	<artifactId>template-sap2sfdc-product-migration</artifactId>
+	<artifactId>template-sap2sfdc-material-migration</artifactId>
 	<packaging>mule</packaging>
-	<version>1.0.0</version>
-	<name>template-sap2sfdc-product-migration Anypoint Template Project</name>
+	<version>1.0.1-SNAPSHOT</version>
+	<name>template-sap2sfdc-material-migration Anypoint Template Project</name>
 
 	<properties>
 		<sap.jco.version>3.0.9</sap.jco.version>
@@ -145,9 +145,9 @@
 		</repository>
 	</repositories>
 	<scm>
-		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-bidirectional-sync.git</connection>
-		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-bidirectional-sync.git</developerConnection>
-		<url>http://github.com/mulesoft/template-sfdc2sap-product-bidirectional-sync</url>
+		<connection>scm:git:https://github.com/mulesoft/template-sap2sfdc-material-migration.git</connection>
+		<developerConnection>scm:git:https://github.com/mulesoft/template-sap2sfdc-material-migration.git</developerConnection>
+		<url>http://github.com/mulesoft/template-sap2sfdc-material-migration</url>
 	  <tag>v1.0.0</tag>
   </scm>
 </project>
