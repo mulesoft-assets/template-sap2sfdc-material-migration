@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.8</version>
 	</parent>
 
 	<artifactId>template-sap2sfdc-material-migration</artifactId>
@@ -16,8 +16,8 @@
 
 	<properties>
 		<sap.jco.version>3.0.9</sap.jco.version>
-		<sap.idoc.version>3.0.6</sap.idoc.version>
-		<sap.build.type>linux64</sap.build.type>
+		<sap.idoc.version>3.0.11</sap.idoc.version>
+		<sap.build.type>mac64</sap.build.type>
 	</properties>
 
 	<build>
@@ -154,6 +154,7 @@
 		<connection>scm:git:https://github.com/mulesoft/template-sap2sfdc-material-migration.git</connection>
 		<developerConnection>scm:git:https://github.com/mulesoft/template-sap2sfdc-material-migration.git</developerConnection>
 		<url>http://github.com/mulesoft/template-sap2sfdc-material-migration</url>
-	  <tag>HEAD</tag>
-  </scm>
+	    <tag>HEAD</tag>
+    </scm>
+    
 </project>
