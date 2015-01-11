@@ -9,9 +9,9 @@ This Anypoint Template should serve as a foundation for setting an offline migra
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
-As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing). The batch job is divided in Input, Process and On Complete stages.
-
 The integration is triggered by an HTTP Endpoint that receives the migration request. Then it retrieves all materials from SAP containing the word _BATTERY_, transforms them into Salesforce products and passes them to the Batch process.
+
+As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing). The batch job is divided in Input, Process and On Complete stages.
 
 During the Process stage, in the first Step the Template will go to Salesforce and query all the existing Products matching the ProductCode for each SAP Material. In the following step, the Product will be upserted to Salesforce.
 
