@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.0.13</version>
+		<version>1.1.1</version>
 	</parent>
 
 	<artifactId>template-sap2sfdc-material-migration</artifactId>
 	<packaging>mule</packaging>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.1.0-SNAPSHOT</version>
 	<name>template-sap2sfdc-material-migration Anypoint Template Project</name>
 
 	<properties>
@@ -75,7 +75,7 @@
 						<configuration>
 							<tasks>
 								<zip destfile="${project.build.directory}/${project.build.finalName}.zip" update="true">
-									<zipfileset dir="${project.build.directory}/temp-native-lib" prefix="lib" />
+									<zipfileset dir="${project.build.directory}/temp-native-lib" prefix="lib"/>
 								</zip>
 							</tasks>
 						</configuration>
@@ -128,6 +128,12 @@
             <version>${mule.version}</version>
             <scope>provided</scope>
         </dependency>
+    <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-http</artifactId>
+            <version>${mule.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 
@@ -143,11 +149,6 @@
 			<name>MuleSoft Snapshots Repository</name>
 			<url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
 			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>mule-ee-dependencies</id>
-			<name>Mule EE Dependencies</name>
-			<url>http://repository-master.mulesoft.org/nexus/content/repositories/mule-ee-dependencies/</url>
 		</repository>
 		<repository>
 			<id>mule-ee-thirdparty</id>
