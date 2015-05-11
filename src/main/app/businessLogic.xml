@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
-	xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper"
-	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
-	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
-http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
-	<data-mapper:config name="BAPI_MATERIAL_GETLIST_to_List_Material_"
-		transformationGraphPath="bapi_material_getlist_to_list_material_.grf"
-		doc:name="BAPI_MATERIAL_GETLIST_to_List_Material_" />
-	<data-mapper:config name="BAPI_MATERIAL_GET_DETAIL_to_Salesforce_Material"
-		transformationGraphPath="bapi_material_get_detail_to_salesforce_material.grf"
-		doc:name="BAPI_MATERIAL_GET_DETAIL_to_Salesforce_Material" />
-    <data-mapper:config name="BAPI_MATERIAL_GETINTNUMBER_to_MaterialNumber_Wrapper" transformationGraphPath="bapi_material_getintnumber_to_materialnumber_wrapper.grf" doc:name="BAPI_MATERIAL_GETINTNUMBER_to_MaterialNumber_Wrapper"/>
 
 	<batch:job name="fromSapToSalesforceBatch">
 		<batch:threading-profile poolExhaustedAction="WAIT" />
