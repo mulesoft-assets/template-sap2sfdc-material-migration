@@ -94,6 +94,10 @@ There are no particular considerations for this Anypoint Template regarding Sale
 
 
 
+
+
+
+
 # Run it! <a name="runit"/>
 Simple steps to get SAP to Salesforce Material Migration running.
 
@@ -158,7 +162,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.username `bob.dylan@sfdc`
 + sfdc.password `DylanPassword123`
 + sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
++ sfdc.url `https://test.salesforce.com/services/Soap/u/32.0`
 
 **SAP Connector configuration**
 
@@ -168,6 +172,23 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.jco.sysnr `14`
 + sap.jco.client `800`
 + sap.jco.lang `EN`
+
++ sap.material.type `ZHTI`
++ sap.material.industrySector `T`
++ sap.material.baseUnitOfMeasurement `KGS`
+
+**SMPT Services configuration**
+
++ smtp.host `smtp.gmail.com`
++ smtp.port `587`
++ smtp.user `your%40email.com`
++ smtp.password `password`
+
+**Mail details**
+
++ mail.from `material.migration%40mulesoft.com`
++ mail.to `your@email.com`
++ mail.subject `SAP2SFDC Material Migration Batch Report`
 
 # API Calls <a name="apicalls"/>
 Salesforce imposes limits on the number of API Calls that can be made. Therefore calculating this amount may be an important factor to consider. The Anypoint Template calls to the API can be calculated using the formula:
