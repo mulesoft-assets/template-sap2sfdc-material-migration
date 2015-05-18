@@ -62,6 +62,9 @@ For instance if 10 records are fetched from origin instance, then 12 API calls w
 + http.port `9090`
 + page.size `100`
 
++ watermark.default.expression `2014-07-14T09:38:00.000Z`
++ timeOffsetBetweenSapAndSalesforce `-62000`
+
 **SalesForce Connector configuration**
 
 + sfdc.username `bob.dylan@sfdc`

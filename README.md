@@ -157,6 +157,9 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + http.port `9090`
 + page.size `100`
 
++ watermark.default.expression `2014-07-14T09:38:00.000Z`
++ timeOffsetBetweenSapAndSalesforce `-62000`
+
 **SalesForce Connector configuration**
 
 + sfdc.username `bob.dylan@sfdc`
