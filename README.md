@@ -30,7 +30,7 @@ This Anypoint Template should serve as a foundation for setting an offline migra
 
 Requirements have been set not only to be used as examples, but also to establish a starting point to adapt your integration to your requirements.
 
-The integration is triggered by an HTTP Endpoint that receives the migration request. Then it retrieves all materials from SAP containing the word _BATTERY_, transforms them into Salesforce products and passes them to the Batch process.
+The integration is triggered by an HTTP Endpoint that receives the migration request. Then it retrieves all materials from SAP from specific date, transforms them into Salesforce products and passes them to the Batch process.
 
 As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing). The batch job is divided in Input, Process and On Complete stages.
 
@@ -138,7 +138,7 @@ Please check this Documentation Page:
 + [Enabling Your Studio Project for SAP](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP)
 
 ### Running on Mule ESB stand alone <a name="runonmuleesbstandalone"/>
-Complete all properties in one of the property files, for example in [mule.prod.properties] (../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
+Complete all properties in one of the property files, for example in [mule.prod.properties](../master/src/main/resources/mule.prod.properties) and run your app with the corresponding environment variable to use it. To follow the example, this will be `mule.env=prod`. 
 
 
 ## Running on CloudHub <a name="runoncloudhub"/>
@@ -180,7 +180,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.material.industrySector `T`
 + sap.material.baseUnitOfMeasurement `KGS`
 
-**SMPT Services configuration**
+**SMTP Services configuration**
 
 + smtp.host `smtp.gmail.com`
 + smtp.port `587`
