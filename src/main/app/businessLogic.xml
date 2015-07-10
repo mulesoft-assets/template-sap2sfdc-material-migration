@@ -4,7 +4,7 @@
 	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
 	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.6.2"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -18,17 +18,11 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
 		<batch:threading-profile poolExhaustedAction="WAIT" />
 		<batch:process-records>
 			<batch:step name="foreachMaterialInSapGetProductInSalesforceStep">
-				<enricher target="#[recordVars['productInSalesforce']]"
-					doc:name="Store result in record var 'productInSalesforce'">
-					<sfdc:query-single config-ref="Salesforce"
-						query="SELECT Id, LastModifiedDate, Name, ProductCode FROM Product2 WHERE ProductCode = '#[payload['ProductCode']]'"
-						doc:name="query Product from Salesforce" />
-				</enricher>
+                <enricher source="#[payload == null ? null : payload.Id]" target="#[payload.Id]" doc:name="set Id from matching Product">
+                    <sfdc:query-single config-ref="Salesforce" query="SELECT Id FROM Product2 WHERE ProductCode = '#[payload['ProductCode']]'" doc:name="query Product from Salesforce"/>
+                </enricher>
 			</batch:step>
 			<batch:step name="foreachMaterialInSapUpsertProductInSalesforceStep" >
-                <expression-component doc:name="prepare Product for Upsert"><![CDATA[payload['Id'] = recordVars['productInSalesforce'] is NullPayload ? null : recordVars['productInSalesforce']['Id'];
-payload.keySet().retainAll(['Id', 'ProductCode', 'Name']);
-]]></expression-component>
 				<batch:commit doc:name="Batch Commit" size="200">
 					<sfdc:upsert config-ref="Salesforce"
 						externalIdFieldName="Id" type="Product2" doc:name="upsert Product in Salesforce">
