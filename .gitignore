@@ -52,9 +52,9 @@ target/
 # --------------- #
 .mule/
 
-# --------------------------------------- #
-# Test credentials to be use locally only #
-# --------------------------------------- #
+# ------------------------------------------------- #
+# Test credentials and libraries to be used locally #
+# ------------------------------------------------- #
 src/test/resources/mule.test.properties
-
+libraries/*
 src/main/app/lib/*
