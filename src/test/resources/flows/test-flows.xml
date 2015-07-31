@@ -67,7 +67,6 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
                 </sap:outbound-endpoint>
                 <dw:transform-message doc:name="ZMULE_MATERIAL_GETLIST to Salesforce Materials">
             <dw:set-payload><![CDATA[%dw 1.0
-%input payload application/xml
 %output application/java
 ---
 payload.ZMULE_MATERIAL_GETLIST.tables.T_MARA.*row map
