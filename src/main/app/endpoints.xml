@@ -4,7 +4,7 @@
 	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 	xmlns:spring="http://www.springframework.org/schema/beans"
 	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="EE-3.7.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
@@ -19,24 +19,25 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
    <flow name="fromSapToSalesforceFlow"  processingStrategy="synchronous">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/migrate-materials" doc:name="HTTP"/>
 
-      <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP">
-            <sap:definition><![CDATA[<ZMULE_MATERIAL_GETLIST>
+      <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMMFM_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP">
+            <sap:definition><![CDATA[<ZMMFM_MATERIAL_GETLIST>
 <import>
-<I_FROM_DATE>${watermark.default.expression}</I_FROM_DATE>
+<IV_FROM_DATE>${watermark.default.expression}</IV_FROM_DATE>
 </import>
-</ZMULE_MATERIAL_GETLIST>]]></sap:definition>
+</ZMMFM_MATERIAL_GETLIST>]]></sap:definition>
 
       </sap:outbound-endpoint>
-        <dw:transform-message doc:name="ZMULE_MATERIAL_GETLIST to Salesforce Materials">
+        <dw:transform-message doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
-payload.ZMULE_MATERIAL_GETLIST.tables.T_MARA.*row map
+payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
 {	
 	Name: $.MAKTX,
 	ProductCode: $.MATNR
 }]]></dw:set-payload>
         </dw:transform-message>
+        <logger message="ssssss - #[payload]" level="INFO" doc:name="Logger"/>
       <batch:execute name="fromSapToSalesforceBatch" doc:name="trigger 'fromSapToSalesforceBatch'" />
       <set-payload value="&lt;body style='font-family:Courier'&gt;&lt;h1&gt;Batch Process initiated&lt;/h1&gt;&lt;b&gt;ID:&lt;/b&gt;#[payload.getId()]&lt;br/&gt;&lt;b&gt;Records to Be Processed: &lt;/b&gt;#[payload.getRecordCount()]&lt;br/&gt; &lt;b&gt;Start execution on: &lt;/b&gt;#[new java.util.Date()]&lt;/body&gt;" doc:name="build Http response" />
 
