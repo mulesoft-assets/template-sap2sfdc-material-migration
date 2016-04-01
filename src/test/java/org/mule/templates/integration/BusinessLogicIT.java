@@ -37,6 +37,7 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 
 	private static final String SAP2SFDC_INBOUND_FLOW_NAME = "fromSapToSalesforceFlow";
 	private static final int TIMEOUT_MILLIS = 120;
+	private static final int OFFSET_BETWEEN_SFDC_AND_SAP = (- 6 * 60 * 60000) - 60000; // - six hours and one minute
 
 	private List<String> productsCreatedInSalesforce;
 	private List<String> productsCreatedInSap;
@@ -52,7 +53,7 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 	public static void beforeTestClass() {
 		// Set default water-mark  expression to current time
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(DateTimeZone.UTC);
-		System.setProperty("watermark.default.expression", formatter.print(System.currentTimeMillis() - 60000)); // one minute ago
+		System.setProperty("watermark.default.expression", formatter.print(System.currentTimeMillis() + OFFSET_BETWEEN_SFDC_AND_SAP));
 	}
 
 	@Before
@@ -106,7 +107,7 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 	public void testSapToSalesforceUpdate()
 			throws MuleException, Exception {
 
-		final HashMap<String, Object> product = createTestProducts();
+		final Map<String, Object> product = createTestProducts();
 
 		// Execution
 		executeWaitAndAssertBatchJob(SAP2SFDC_INBOUND_FLOW_NAME);
@@ -114,22 +115,22 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 		compareProducts(product);
 	}
 
-	private HashMap<String, Object> createTestProducts() throws Exception {
+	private Map<String, Object> createTestProducts() throws Exception {
 		// Build test products
 		final HashMap<String, Object> product = new HashMap<String, Object>();
 		String uniqueSuffix = Long.toString(System.currentTimeMillis(), Character.MAX_RADIX).toUpperCase();
 		product.put("ProductCode", "S2S_PBS-" + uniqueSuffix);
 
 		final Map<String, Object> sapProduct = (Map<String, Object>) product.clone();
-		sapProduct.put("Name", "BATTERY-sap2sfdc-prod-migration-"+ uniqueSuffix + "-SAP");
+		sapProduct.put("Name", "BATTERY-sap2sfdc-prod-migration-"+ uniqueSuffix);
 
 		// Create products in sand-boxes and keep track of them for posterior cleaning up
 		// note that product in target instance doesn't need to exist - other tests could test that too
 		productsCreatedInSap.add(createTestProductsInSapSandbox(sapProduct, createProductInSapFlow));
-		return product;
+		return sapProduct;
 	}
 
-	private void compareProducts(HashMap<String, Object> product) throws Exception {
+	private void compareProducts(Map<String, Object> product) throws Exception {
 		// Assertions
 		Map<String, String> retrievedProductFromSalesforce = (Map<String, String>) queryProduct(product, queryProductFromSalesforceFlow);
 		

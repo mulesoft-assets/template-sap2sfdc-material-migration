@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.1"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
 
-    <flow name="createProductsInSapFlow" doc:name="createProductsInSapFlow">
+    <flow name="createProductsInSapFlow" >
         <collection-splitter doc:name="Collection Splitter"/>
         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Upsert Material to SAP">
             <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>
@@ -47,29 +47,30 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
 
         </sap:outbound-endpoint>
         <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
-        <logger level="INFO" message="Create Test Products in SAP result: #[payload]" doc:name="Logger"/>
+        <logger message="Create Test Products in SAP result: #[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
-    <flow name="queryProductFromSalesforceFlow" doc:name="queryProductFromSalesforceFlow">
+    <flow name="queryProductFromSalesforceFlow" >
         <sfdc:query-single config-ref="Salesforce" query="SELECT Id, Name, ProductCode FROM Product2 WHERE ProductCode = '#[payload['ProductCode']]'" doc:name="Query Product from Salesforce"/>
         <logger level="INFO" message="Retrieve Products from Salesforce result: #[payload]" doc:name="Logger"/>
     </flow>
-    <flow name="queryProductFromSapFlow" doc:name="queryProductFromSapFlow">
+    <flow name="queryProductFromSapFlow" >
+
         <enricher source="#[payload.isEmpty() ? NullPayload.getInstance() : payload[0]]" target="#[payload]" doc:name="Store result in record var 'materialInSap'">
             <processor-chain doc:name="Processor Chain">
-                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMULE_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Material from SAP">
-                    <sap:definition><![CDATA[<ZMULE_MATERIAL_GETLIST>
+                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMMFM_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP" >
+                    <sap:definition><![CDATA[<ZMMFM_MATERIAL_GETLIST>
 <import>
-<I_MAT_ID>#[payload['ProductCode']]</I_MAT_ID>
+<IV_MAT_ID>#[payload.ProductCode]</IV_MAT_ID>
 </import>
-</ZMULE_MATERIAL_GETLIST>]]></sap:definition>
-
-
+</ZMMFM_MATERIAL_GETLIST>]]></sap:definition>
                 </sap:outbound-endpoint>
-                <dw:transform-message doc:name="ZMULE_MATERIAL_GETLIST to Salesforce Materials">
+                          
+                <dw:transform-message doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
-payload.ZMULE_MATERIAL_GETLIST.tables.T_MARA.*row map
+payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
 {	
 	Name: $.MAKTX,
 	LastModifiedDate: $.LAST_MODIF_DATE,
@@ -80,9 +81,10 @@ payload.ZMULE_MATERIAL_GETLIST.tables.T_MARA.*row map
         </dw:transform-message>
             </processor-chain>
         </enricher>
-        <logger level="INFO" message="Retrieve Products from SAP result: #[payload]" doc:name="Logger"/>
+        <logger message="Retrieve Products from SAP result: #[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
-    <flow name="deleteProductsFromSapFlow" doc:name="deleteProductsFromSapFlow">
+    <flow name="deleteProductsFromSapFlow" >
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Delete Material from SAP" functionName="BAPI_MATERIAL_SAVEDATA">
                 <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>
@@ -104,7 +106,7 @@ payload.ZMULE_MATERIAL_GETLIST.tables.T_MARA.*row map
             </sap:outbound-endpoint>
         </foreach>
     </flow>
-    <flow name="deleteProductsFromSalesforceFlow" doc:name="deleteProductsFromSalesforceFlow">
+    <flow name="deleteProductsFromSalesforceFlow" >
         <sfdc:delete config-ref="Salesforce" doc:name="Delete Product from Salesforce"/>
         <logger message="Remove Products from Salesforce result: #[payload]" level="INFO" doc:name="Logger"/>
     </flow>
