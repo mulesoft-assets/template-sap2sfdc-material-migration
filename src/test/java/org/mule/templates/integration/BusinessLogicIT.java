@@ -37,7 +37,7 @@ public class BusinessLogicIT extends AbstractTemplatesTestCase {
 
 	private static final String SAP2SFDC_INBOUND_FLOW_NAME = "fromSapToSalesforceFlow";
 	private static final int TIMEOUT_MILLIS = 120;
-	private static final int OFFSET_BETWEEN_SFDC_AND_SAP = (- 5 * 60 * 60000) - 60000; // - five hours and one minute
+	private static final int OFFSET_BETWEEN_SFDC_AND_SAP = (- 6 * 60 * 60000) - 60000; // - six hours and one minute
 
 	private List<String> productsCreatedInSalesforce;
 	private List<String> productsCreatedInSap;

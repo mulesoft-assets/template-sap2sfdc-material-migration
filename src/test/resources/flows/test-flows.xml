@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
 	xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
 	xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" xmlns="http://www.mulesoft.org/schema/mule/core"
@@ -58,16 +58,14 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
 
         <enricher source="#[payload.isEmpty() ? NullPayload.getInstance() : payload[0]]" target="#[payload]" doc:name="Store result in record var 'materialInSap'">
             <processor-chain doc:name="Processor Chain">
-                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMMFM_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Material from SAP" jcoClientExtendedProperties-ref="PollSynchronizer">
+                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="ZMMFM_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query Materials from SAP" >
                     <sap:definition><![CDATA[<ZMMFM_MATERIAL_GETLIST>
 <import>
 <IV_MAT_ID>#[payload.ProductCode]</IV_MAT_ID>
 </import>
 </ZMMFM_MATERIAL_GETLIST>]]></sap:definition>
-
-
-
                 </sap:outbound-endpoint>
+                          
                 <dw:transform-message doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -83,7 +81,8 @@ payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
         </dw:transform-message>
             </processor-chain>
         </enricher>
-        <logger level="INFO" message="Retrieve Products from SAP result: #[payload]" doc:name="Logger"/>
+        <logger message="Retrieve Products from SAP result: #[payload]" level="INFO" doc:name="Logger"/>
+
     </flow>
     <flow name="deleteProductsFromSapFlow" >
         <foreach doc:name="For Each">

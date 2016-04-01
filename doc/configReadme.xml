@@ -41,6 +41,17 @@ You will find that there are three dependencies in the pom.xml file that begin w
 	**com.sap.conn.jco** 
 These dependencies are private for Mulesoft and will cause you application not to build from a Maven command line. You need to replace them with "provided" scope and copy the libraries into the build path.
 ]]>
+		</section>		
+		<section id="sap_src">
+<![CDATA[
+This template uses custom BAPI functions. To create them please use following steps:
+1. Create structure `ZMMST_ENH_MARA` in transaction `SE11` as per its definition in file `structure_ZMMST_ENH_MARA.abap`
+2. Create table type `ZMMTTY_ENH_MARA` in transaction `SE11` as per its definition in file `table_type_ZMMTTY_ENH_MARA.abap`
+3. Create message class called `ZMC_ENGTEMPLATES` in transaction `SE91` as per definition in file `message_class_ZMC_ENGTEMPLATES.abap`
+4. Create function module `ZMMFM_MATERIAL_GETLIST` in transaction `SE37` as per source file `ZMMFM_MATERIAL_GETLIST.abap`
+
+Referenced files are in [src/main/resources] directory.
+]]>
 		</section>
 		<section id="api_calls">
 <![CDATA[
