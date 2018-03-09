@@ -32,7 +32,7 @@ Requirements have been set not only to be used as examples, but also to establis
 
 The integration is triggered by an HTTP Endpoint that receives the migration request. Then it retrieves all materials from SAP from specific date, transforms them into Salesforce products and passes them to the Batch process.
 
-As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing). The batch job is divided in Input, Process and On Complete stages.
+As implemented, this Anypoint Template leverages the [Batch Module](http://www.mulesoft.org/documentation/display/current/Batch+Processing). The batch job is divided in Process and On Complete stages.
 
 During the Process stage, in the first Step the Template will go to Salesforce and query all the existing Products matching the ProductCode for each SAP Material. In the following step, the Product will be upserted to Salesforce.
 
@@ -156,12 +156,12 @@ Mule Studio provides you with really easy way to deploy your Template directly t
 In order to use this Mule Anypoint Template you need to configure properties (Credentials, configurations, etc.) either in properties file or in CloudHub as Environment Variables. Detail list with examples:
 ### Application configuration
 **HTTP Connector configuration**
-
 + http.port `9090`
 
 **Batch Aggregator configuration**
 + page.size `100`
 
+**Watermarking default last query timestamp e.g. 2017-12-13T03:00:59Z**
 + watermark.default.expression `2018-03-07T09:38:00.000Z`
 
 **SAP Connector configuration**
@@ -243,7 +243,7 @@ This Template has a [HTTP Listener Connector](http://www.mulesoft.org/documentat
 
 + `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
 + The path configured by default is `migrate-materials` and you are free to change for the one you prefer.
-+ The host name for all endpoints in your CloudHub configuration should be defined as `0.0.0.0`. CloudHub will then route requests from your application domain URL to the endpoint.
++ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
 
 
 
