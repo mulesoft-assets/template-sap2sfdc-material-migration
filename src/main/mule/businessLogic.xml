@@ -13,44 +13,16 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 
 	<flow name="businessLogicFlow" doc:id="884f86c5-66e1-4701-bb9b-594c2a60abf3">
-		<ee:transform doc:name="Set XML input" doc:id="9f392df5-f0cc-46c6-9b0a-a383742ecfa6">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/xml
----
-{
-  "ZMMFM_MATERIAL_GETLIST": {
-    "import": {
-      "IV_FROM_DATE": "${watermark.default.expression}"
-    }
-  }
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<sap:execute-synchronous-remote-function-call
-			doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" config-ref="SAP_Outbound"
-			key="ZMMFM_MATERIAL_GETLIST" />
-		<ee:transform doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials" doc:id="75a8b7f3-29ce-4f2e-82fd-6cd5327aa631">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
-{	
-	Name: $.MAKTX,
-	ProductCode: $.MATNR
-}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<flow-ref doc:name="Call getSAPMaterialsSubFlow" doc:id="dd2ea27d-0026-409f-91b1-8b36715240f3" name="getSAPMaterialsSubFlow"/>
 		<batch:job jobName="migrateProductsBatch" doc:id="79b373e6-1aeb-43a9-9dfe-8ac0d2f31fdc">
 			<batch:process-records>
 				<batch:step name="getProductInSalesforceStep" doc:id="232087de-e311-49c1-a890-439c65ea1af2">
 					<salesforce:query-single doc:name="Query Product from Salesforce"
-						doc:id="b6397834-1792-49e5-a2a5-039821fc6b27" config-ref="Salesforce" target="sfId"
+						doc:id="b6397834-1792-49e5-a2a5-039821fc6b27" config-ref="Salesforce" target="sfdcId"
 						targetValue="#[payload.Id]">
 						<salesforce:salesforce-query>SELECT Id FROM Product2 WHERE ProductCode = ':productcode'
 						</salesforce:salesforce-query>
-						<salesforce:parameters><![CDATA[#[output applicaton/java
+						<salesforce:parameters><![CDATA[#[output application/java
 ---
 {
 	"productcode" : payload.ProductCode
@@ -61,9 +33,10 @@ payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
 							<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
-payload ++ {Id : vars.sfId}]]></ee:set-payload>
+payload ++ {Id : vars.sfdcId}]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="533ef37e-6865-4581-a25c-99e0e290c7ef" message="#[payload]"/>
 				</batch:step>
 				<batch:step name="upsertProductInSalesforceStep" doc:id="78a74ab4-9b91-416d-985a-acda2ac377eb">
 					<batch:aggregator doc:name="Batch Aggregator" doc:id="1ad86a98-643e-494a-a90a-32daab0b03cc"
@@ -108,6 +81,35 @@ payload ++ {Id : vars.sfId}]]></ee:set-payload>
 			</batch:on-complete>
 		</batch:job>
 	</flow>
+	<sub-flow name="getSAPMaterialsSubFlow" doc:id="62136214-d630-456f-917a-027dfe554b2f" >
+		<ee:transform doc:name="Set XML input" doc:id="9f392df5-f0cc-46c6-9b0a-a383742ecfa6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+  "ZMMFM_MATERIAL_GETLIST": {
+    "import": {
+      "IV_FROM_DATE": "${watermark.default.expression}"
+    }
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<sap:execute-synchronous-remote-function-call doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" config-ref="SAP_Outbound" key="ZMMFM_MATERIAL_GETLIST" />
+		<ee:transform doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials" doc:id="75a8b7f3-29ce-4f2e-82fd-6cd5327aa631">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
+{	
+	Name: $.MAKTX,
+	ProductCode: $.MATNR
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
 	<flow name="mainFlow" doc:id="7c0a5bef-b3d5-442f-bff3-10d038f69a5e">
 		<flow-ref doc:name="businessLogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0"
 			name="businessLogicFlow" />
