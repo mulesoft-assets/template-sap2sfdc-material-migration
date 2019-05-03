@@ -13,7 +13,6 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 
 	<flow name="businessLogicFlow" doc:id="884f86c5-66e1-4701-bb9b-594c2a60abf3">
-		<flow-ref doc:name="Call getSAPMaterialsSubFlow" doc:id="dd2ea27d-0026-409f-91b1-8b36715240f3" name="getSAPMaterialsSubFlow"/>
 		<batch:job jobName="migrateProductsBatch" doc:id="79b373e6-1aeb-43a9-9dfe-8ac0d2f31fdc">
 			<batch:process-records>
 				<batch:step name="getProductInSalesforceStep" doc:id="232087de-e311-49c1-a890-439c65ea1af2">
@@ -111,6 +110,7 @@ payload.ZMMFM_MATERIAL_GETLIST.tables.T_MARA.*row map
 		</ee:transform>
 	</sub-flow>
 	<flow name="mainFlow" doc:id="7c0a5bef-b3d5-442f-bff3-10d038f69a5e">
+		<flow-ref doc:name="Call getSAPMaterialsSubFlow" doc:id="dd2ea27d-0026-409f-91b1-8b36715240f3" name="getSAPMaterialsSubFlow" />
 		<flow-ref doc:name="businessLogicFlow" doc:id="91360ede-4d71-44c7-9b64-8ee762e04ea0"
 			name="businessLogicFlow" />
 		<error-handler>
