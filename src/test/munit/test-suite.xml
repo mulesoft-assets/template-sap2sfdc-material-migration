@@ -14,12 +14,20 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
     <munit:config name="test-suite.xml" />
     
     <configuration-properties doc:name="Configuration properties" file="mule.test.properties" />
-    <configuration-properties doc:name="Configuration properties" file="common.properties" />
     
     <munit:before-test name="test-suite-Before_Test" description="Before tests actions" doc:id="e8d6de21-d3dc-443b-99f1-8e5808de4b3c">
         <flow-ref doc:name="Call getSAPMaterialsSubFlow" doc:id="fc0f7640-b6e4-472b-8c27-3d64b94977af" name="getSAPMaterialsSubFlow" />
-        <ee:transform doc:name="Prepare test data" doc:id="9761511e-1f2d-4644-ace7-3d59a693b516">
+		<ee:transform doc:name="Prepare test data" doc:id="9761511e-1f2d-4644-ace7-3d59a693b516">
             <ee:message>
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+	{
+		Name: "Test product",
+		ProductCode: payload[0].ProductCode
+    }
+]]]></ee:set-payload>
             </ee:message>
             <ee:variables>
                 <ee:set-variable variableName="testDataUpdate"><![CDATA[%dw 2.0
@@ -32,26 +40,25 @@ output application/java
 payload[1]]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform doc:name="Prepare test data for Salesforce" doc:id="10096f7c-bf3a-4c21-a381-e9b86e6430ab">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-[
-	{
-		Name: "Test product",
-		ProductCode: vars.testDataUpdate.ProductCode
-    }
-]]]></ee:set-payload>
-            </ee:message>
-            <ee:variables>
-            </ee:variables>
-        </ee:transform>
         <salesforce:create doc:name="Create Product in Salesforce" doc:id="a0643d2b-5ab3-44f0-a948-a7bd948e9fc0" config-ref="Salesforce"
             type="Product2" />
         <set-variable value="#[payload map ($.id)]" doc:name="Store IDs to variable sfdcIds" doc:id="014f387f-1cd3-4bf9-a5cd-0a135b299e33"
             variableName="sfdcIds" />
-        <munit-tools:mock-when doc:name="Mock email processor to avoid sending email" doc:id="65de8ffc-cf2f-490c-82f1-09f984dda3ee"
+        <ee:transform doc:name="Store IDs to variable sfdcIds and set input" doc:id="af129df0-62f9-4757-8ede-509728a75ffe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[vars.testDataUpdate, vars.testDataCreate]]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="sfdcId" ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ($.id)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock email processor to avoid sending email" doc:id="65de8ffc-cf2f-490c-82f1-09f984dda3ee"
             processor="email:send">
             <munit-tools:then-return />
         </munit-tools:mock-when>
