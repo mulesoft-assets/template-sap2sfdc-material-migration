@@ -95,7 +95,7 @@ output application/xml
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<sap:execute-synchronous-remote-function-call doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" config-ref="SAP_Outbound" key="ZMMFM_MATERIAL_GETLIST" />
+		<sap:sync-rfc config-ref="SAP_Config" doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" key="ZMMFM_MATERIAL_GETLIST" />
 		<ee:transform doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials" doc:id="75a8b7f3-29ce-4f2e-82fd-6cd5327aa631">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
