@@ -4,6 +4,7 @@
     xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 
+    <global-property doc:name="Global Property" name="mule.env" value="dev" />
     <http:listener-config name="HTTP_Listener_config" doc:id="910654bf-9fd9-4073-bad4-cf951b7f0022" doc:name="HTTP Listener config">
         <http:listener-connection host="0.0.0.0" port="${http.port}" />
     </http:listener-config>
@@ -21,14 +22,11 @@
     <configuration-properties file="common.properties" doc:id="dffa4da7-cc5c-4ecb-922e-1115b4387354" doc:name="Configuration properties" />
     <configuration-properties file="mule.${mule.env}.properties" doc:id="674beef8-9485-40a7-99b9-0685c9b7e863" doc:name="Configuration properties" />
 
-    <sap:outbound-config name="SAP_Outbound" doc:id="d6d228bb-e45e-4e33-88bc-1775114d366d" doc:name="SAP Outbound">
-        <sap:simple-connection-provider-connection applicationServerHost="${sap.jco.ashost}" client="${sap.jco.client}"
-            language="${sap.jco.lang}" password="${sap.jco.passwd}" systemNumber="${sap.jco.sysnr}" username="${sap.jco.user}" />
-    </sap:outbound-config>
-
     <salesforce:sfdc-config name="Salesforce" doc:id="2e0268b2-3e4f-4253-aa67-498d8ea3bff4" doc:name="Salesforce Sfdc config">
         <salesforce:basic-connection password="${sfdc.password}" securityToken="${sfdc.securityToken}" username="${sfdc.username}" />
     </salesforce:sfdc-config>
 
-    <global-property doc:name="Global Property" name="mule.env" value="dev" />
+    <sap:sap-config name="SAP_Config" doc:name="SAP Config" doc:id="b75f5e15-a3fe-4c8d-9115-cdacd2cd7184" >
+        <sap:simple-connection-provider-connection language="${sap.jco.lang}" password="${sap.jco.passwd}" systemNumber="${sap.jco.sysnr}" client="${sap.jco.client}" applicationServerHost="${sap.jco.ashost}" username="${sap.jco.user}" />
+    </sap:sap-config>
 </mule>
