@@ -13,8 +13,8 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 
     <munit:config name="test-suite.xml" />
     
-    <configuration-properties doc:name="Configuration properties" file="C:\Users\hotovo\mule.dev.properties" />
-    
+    <configuration-properties doc:name="Configuration properties" file="mule.test.properties" />
+
     <munit:before-test name="test-suite-Before_Test" description="Before tests actions" doc:id="e8d6de21-d3dc-443b-99f1-8e5808de4b3c">
         <flow-ref doc:name="Call getSAPMaterialsSubFlow" doc:id="fc0f7640-b6e4-472b-8c27-3d64b94977af" name="getSAPMaterialsSubFlow" />
         <ee:transform doc:name="Prepare test data" doc:id="9761511e-1f2d-4644-ace7-3d59a693b516">
