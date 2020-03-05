@@ -103,14 +103,15 @@ vars.sfdcIds + vars.resultCreated.Id]]></ee:set-variable>
         <munit:validation>
             <munit-tools:assert-that doc:name="Assert that record is created in Salesforce" expression="#[vars.resultCreated.Id]"
                 is="#[MunitTools::notNullValue()]" message="Record isn't created in Salesforce" />
-            <munit-tools:assert-that doc:name="Assert that record is updated in Salesforce" expression="#[vars.resultUpdated.Name]"
+            <munit-tools:assert-that doc:name="Assert that record is updated in Salesforce" expression="#[vars.resultUpdated.Name[0]]"
                 is="#[MunitTools::equalTo(vars.testDataUpdate.Name)]" message="Record isn't updated in Salesforce" />
         </munit:validation>
     </munit:test>
     
     <munit:after-test name="test-suiteAfter_Test" description="After tests actions" doc:id="913515a7-4abe-41e3-bf2c-82bb9ec21576">
+        <logger level="INFO" doc:name="Logger" doc:id="92a58342-61c0-46ca-b84f-cf7d91b9130c" message="#[vars.sfdcIds]"/>
         <salesforce:delete doc:name="Delete test data from Salesforce" doc:id="684f9f53-46e5-4c33-b15f-482efb72d52e" config-ref="Salesforce">
-            <salesforce:ids><![CDATA[#[vars.sfdcIds]]]></salesforce:ids>
+            <salesforce:ids><![CDATA[#[flatten(vars.sfdcIds)]]]></salesforce:ids>
         </salesforce:delete>
     </munit:after-test>
 </mule>
