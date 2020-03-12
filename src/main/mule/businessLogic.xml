@@ -16,7 +16,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<batch:job jobName="migrateProductsBatch" doc:id="79b373e6-1aeb-43a9-9dfe-8ac0d2f31fdc">
 			<batch:process-records>
 				<batch:step name="getProductInSalesforceStep" doc:id="232087de-e311-49c1-a890-439c65ea1af2">
-					<salesforce:query-single doc:name="Query Product from Salesforce"
+					<salesforce:query doc:name="Query Product from Salesforce"
 						doc:id="b6397834-1792-49e5-a2a5-039821fc6b27" config-ref="Salesforce" target="sfdcId"
 						targetValue="#[payload.Id]">
 						<salesforce:salesforce-query>SELECT Id FROM Product2 WHERE ProductCode = ':productcode'
@@ -26,24 +26,23 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 {
 	"productcode" : payload.ProductCode
 }]]]></salesforce:parameters>
-					</salesforce:query-single>
+					</salesforce:query>
 					<ee:transform doc:name="Set Id from matching Product" doc:id="1ffa913b-7d6e-4bd8-bf1c-d20219be7373">
 						<ee:message>
 							<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
-payload ++ {Id : vars.sfdcId}]]></ee:set-payload>
+payload ++ {Id : if (typeOf(vars.sfdcId) ~= "Array") vars.sfdcId[0] else vars.sfdcId}]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
-					<logger level="INFO" doc:name="Logger" doc:id="533ef37e-6865-4581-a25c-99e0e290c7ef" message="#[payload]"/>
 				</batch:step>
 				<batch:step name="upsertProductInSalesforceStep" doc:id="78a74ab4-9b91-416d-985a-acda2ac377eb">
 					<batch:aggregator doc:name="Batch Aggregator" doc:id="1ad86a98-643e-494a-a90a-32daab0b03cc"
 						size="${page.size}">
-						<salesforce:upsert type="Product2" doc:name="Upsert Product in Salesforce"
+                        <salesforce:upsert objectType="Product2" doc:name="Upsert Product in Salesforce"
 							doc:id="82b45661-82fb-46c2-8a8e-74961fdfa16e" config-ref="Salesforce" externalIdFieldName="Id" />
-						<logger level="INFO" doc:name="Log result" doc:id="c3b062c6-ff95-4898-82e6-9e128d0aa97e"
-							message="Upsert result: [output application/json --- payload]" />
+                        <logger level="INFO" doc:name="Log result" doc:id="c3b062c6-ff95-4898-82e6-9e128d0aa97e"
+							message="Upsert result: #[output application/json --- payload]" />
 					</batch:aggregator>
 				</batch:step>
 			</batch:process-records>
@@ -89,14 +88,14 @@ output application/xml
 {
   "ZMMFM_MATERIAL_GETLIST": {
     "import": {
-      "IV_FROM_DATE": "${watermark.default.expression}"
+      "IV_FROM_DATE": p('watermark.default.expression')
     }
   }
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<sap:sync-rfc config-ref="SAP_Config" doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" key="ZMMFM_MATERIAL_GETLIST" />
-		<ee:transform doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials" doc:id="75a8b7f3-29ce-4f2e-82fd-6cd5327aa631">
+        <sap:sync-rfc config-ref="SAP_Config" doc:name="Query Materials from SAP" doc:id="3608ff92-eae3-469f-8b0b-047f118699aa" key="ZMMFM_MATERIAL_GETLIST" />
+        <ee:transform doc:name="ZMMFM_MATERIAL_GETLIST to Salesforce Materials" doc:id="75a8b7f3-29ce-4f2e-82fd-6cd5327aa631">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/java
